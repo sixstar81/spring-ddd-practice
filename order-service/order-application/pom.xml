@@ -8,6 +8,12 @@
 	</parent>
 
 	<artifactId>order-application</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>com.sk</groupId>
+			<artifactId>order-application-service</artifactId>
+		</dependency>
+	</dependencies>
 
 
 </project>

@@ -9,4 +9,11 @@
 
 	<artifactId>order-dataaccess</artifactId>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.sk</groupId>
+			<artifactId>order-application-service</artifactId>
+		</dependency>
+	</dependencies>
+
 </project>

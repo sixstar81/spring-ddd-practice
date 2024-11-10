@@ -9,4 +9,27 @@
 
 	<artifactId>order-container</artifactId>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.sk</groupId>
+			<artifactId>order-domain-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.sk</groupId>
+			<artifactId>order-application-service</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.sk</groupId>
+			<artifactId>order-application</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.sk</groupId>
+			<artifactId>order-dataaccess</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.sk</groupId>
+			<artifactId>order-messaging</artifactId>
+		</dependency>
+	</dependencies>
+
 </project>
