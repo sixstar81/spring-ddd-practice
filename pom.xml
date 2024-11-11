@@ -64,7 +64,18 @@
 					<release>21</release>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.github.ferstl</groupId>
+				<artifactId>depgraph-maven-plugin</artifactId>
+				<version>4.0.2</version>
+				<configuration>
+					<createImage>true</createImage>
+					<showGroupIds>true</showGroupIds>
+					<showVersions>true</showVersions>
+					<showDuplicates>true</showDuplicates>
+					<showConflicts>true</showConflicts>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-
 </project>
