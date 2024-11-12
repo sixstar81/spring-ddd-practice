@@ -1,9 +1,11 @@
-## graphviz(모듈 그래프 시각화 도구) 사용법
-graphviz 를 먼저 설치해야 함
+> graphviz(모듈 그래프 시각화 도구) 사용법
 
-brew install graphviz
+ - graphviz 를 먼저 설치해야 함
+    : brew install graphviz
 
-1) pom.xml 에 아래 플러그인 추가
+1) pom.xml 에 아래 플러그인 추가 
+
+~~~xml
    <plugin>
    <groupId>com.github.ferstl</groupId>
    <artifactId>depgraph-maven-plugin</artifactId>
@@ -16,8 +18,8 @@ brew install graphviz
    <showConflicts>true</showConflicts>
    </configuration>
    </plugin>
-
-2)아래 명령어 실행
-mvn depgraph:graph
+~~~
+2) 아래 명령어 실행
+  : mvn depgraph:graph
 
 3) order-container 하위에 dependency-graph.png 파일 생성
