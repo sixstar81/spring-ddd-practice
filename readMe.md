@@ -1,3 +1,6 @@
+# 시스템 구성도
+![시스템구성도](documents/order-service-domain-logic-oncourse.png)
+
 # graphviz(모듈 그래프 시각화 도구) 사용법
 
  - graphviz 를 먼저 설치해야 함
