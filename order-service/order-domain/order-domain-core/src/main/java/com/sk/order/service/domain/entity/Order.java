@@ -2,10 +2,12 @@ package com.sk.order.service.domain.entity;
 
 import com.sk.domain.entity.AggregateRoot;
 import com.sk.domain.valueobject.*;
+import com.sk.order.service.domain.valueobject.OrderItemId;
 import com.sk.order.service.domain.valueobject.StreetAddress;
 import com.sk.order.service.domain.valueobject.TrackingId;
 
 import java.util.List;
+import java.util.UUID;
 
 public class Order extends AggregateRoot<OrderId> {
 
@@ -18,12 +20,18 @@ public class Order extends AggregateRoot<OrderId> {
     private OrderStatus orderStatus;
     private List<String> failureMessages;
 
-    public Order(CustomerId customerId, RestaurantId restaurantId, StreetAddress deliveryAddress, Money price, List<OrderItem> items) {
-        this.customerId = customerId;
-        this.restaurantId = restaurantId;
-        this.deliveryAddress = deliveryAddress;
-        this.price = price;
-        this.items = items;
+    public void initializeOrder(){
+        setId(new OrderId(UUID.randomUUID()));
+        trackingId = new TrackingId(UUID.randomUUID());
+        orderStatus = OrderStatus.PENDING;
+        initializeOrderItems();
+    }
+
+    private void initializeOrderItems() {
+        long itemId = 1L;
+        for (OrderItem item : items) {
+            item.initializeOrderItem(super.getId(), new OrderItemId(itemId++));
+        }
     }
 
     private Order(Builder builder) {
