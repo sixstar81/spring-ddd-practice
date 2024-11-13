@@ -5,9 +5,8 @@ import com.sk.domain.valueobject.Money;
 import com.sk.domain.valueobject.ProductId;
 
 public class Product extends BaseEntity<ProductId> {
-    private String name;
-    private Money price;
-
+    private final String name;
+    private final Money price;
 
     public Product(ProductId productId, String name, Money price) {
         super.setId(productId);
@@ -15,6 +14,11 @@ public class Product extends BaseEntity<ProductId> {
         this.price = price;
     }
 
+    public String getName() {
+        return name;
+    }
 
-
+    public Money getPrice() {
+        return price;
+    }
 }
