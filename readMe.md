@@ -1,4 +1,4 @@
-# 시스템 구성도
+# 시스템 도메인 구성도
 ![시스템구성도](documents/order-service-domain-logic-oncourse.png)
 
 # graphviz(모듈 그래프 시각화 도구) 사용법
