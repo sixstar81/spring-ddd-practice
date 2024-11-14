@@ -2,6 +2,7 @@ package com.sk.order.service.domain.entity;
 
 import com.sk.domain.entity.AggregateRoot;
 import com.sk.domain.valueobject.*;
+import com.sk.order.service.domain.exception.OrderDomainException;
 import com.sk.order.service.domain.valueobject.OrderItemId;
 import com.sk.order.service.domain.valueobject.StreetAddress;
 import com.sk.order.service.domain.valueobject.TrackingId;
@@ -25,6 +26,25 @@ public class Order extends AggregateRoot<OrderId> {
         trackingId = new TrackingId(UUID.randomUUID());
         orderStatus = OrderStatus.PENDING;
         initializeOrderItems();
+    }
+
+    public void validateOrder(){
+        validateInitialOrder();
+        validateTotalPrice();
+        validateItemPrice();
+    }
+
+    private void validateInitialOrder() {
+        if(orderStatus != null || getId() != null){
+            throw new OrderDomainException("Order is not correct state for initialization");
+        }
+    }
+
+    private void validateTotalPrice() {
+
+    }
+
+    private void validateItemPrice() {
     }
 
     private void initializeOrderItems() {

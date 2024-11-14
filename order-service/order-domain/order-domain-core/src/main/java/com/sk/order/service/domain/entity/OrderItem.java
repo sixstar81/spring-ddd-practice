@@ -12,7 +12,8 @@ public class OrderItem extends BaseEntity<OrderItemId> {
     private final Money price;
     private final Money subTotal;
 
-    public void initializeOrderItem(OrderId orderId, OrderItemId orderItemId){
+    //--* Order 에서만 호출되도록 public 제거
+    void initializeOrderItem(OrderId orderId, OrderItemId orderItemId){
         this.orderId = orderId;
         super.setId(orderItemId);
     }
