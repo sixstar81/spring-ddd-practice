@@ -41,10 +41,27 @@ public class Order extends AggregateRoot<OrderId> {
     }
 
     private void validateTotalPrice() {
-
+        if(price == null || !price.isGreaterThanZero()){
+            throw new OrderDomainException("Total price is greater than zero!");
+        }
     }
 
     private void validateItemPrice() {
+        Money orderItemsTotal = items.stream().map(orderItem -> {
+            validateItemPrice(orderItem);
+            return orderItem.getSubTotal();
+        }).reduce(Money.ZERO, Money::add);
+        if(price.notEquals(orderItemsTotal)){
+            throw new OrderDomainException("Total price :" + price.getAmount() + " is not" +
+                    " equal to Order item total : " + orderItemsTotal);
+        }
+    }
+
+    private void validateItemPrice(OrderItem orderItem) {
+        if(!orderItem.isPriceValid())
+            throw new OrderDomainException("Order Item Price is not valid. " +
+                    " order item price : " + orderItem.getPrice().getAmount() +
+                    " product:  " + orderItem.getProduct().getId().getValue());
     }
 
     private void initializeOrderItems() {

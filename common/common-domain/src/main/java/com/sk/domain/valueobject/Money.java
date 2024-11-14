@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class Money {
     private final BigDecimal amount;
+    public static final Money ZERO = new Money(BigDecimal.ZERO);
 
     public Money(BigDecimal amount) {
         this.amount = amount;
@@ -39,6 +40,10 @@ public class Money {
         //소수점 3째자리에서 반올림하여 2째자리까지만 남긴다.
         //산술계산에 의한 누적 오류를 통계적으로 최소화 한다.
         return input.setScale(2, RoundingMode.HALF_EVEN);
+    }
+
+    public boolean notEquals(Object o){
+        return !equals(o);
     }
 
     @Override
