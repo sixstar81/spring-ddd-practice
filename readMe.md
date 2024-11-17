@@ -28,3 +28,6 @@
 3) order-container 하위에 dependency-graph.png 파일 생성
 
 ![그래프 결과](documents/dependency-graph.png)
+
+# 주문 생성 요청 흐름도
+![](documents/order-request-simple-flow.png)
