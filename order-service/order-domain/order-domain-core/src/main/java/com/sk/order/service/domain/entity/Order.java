@@ -36,7 +36,7 @@ public class Order extends AggregateRoot<OrderId> {
 
     public void pay(){
         if(orderStatus != OrderStatus.PENDING){
-            throw new OrderDomainException("order is not correct state for pay operation!")
+            throw new OrderDomainException("order is not correct state for pay operation!");
         }
         orderStatus = OrderStatus.PAID;
     }
