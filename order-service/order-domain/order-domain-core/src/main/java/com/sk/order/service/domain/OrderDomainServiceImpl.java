@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class OrderDomainServiceImpl implements OrderDomainService{
+
+    private static final String UTC = "UTC";
+
     @Override
     public OrderCreatedEvent validateAndInitiateOrder(Order order, Restaurant restaurant) {
         validateRestaurant(restaurant);
@@ -25,27 +28,35 @@ public class OrderDomainServiceImpl implements OrderDomainService{
         order.initializeOrder();
         log.info("order with id : {} is initiated", order.getId().getValue());
 
-        return new OrderCreatedEvent(order, ZonedDateTime.now(ZoneId.of("UTC")));
+        return new OrderCreatedEvent(order, ZonedDateTime.now(ZoneId.of(UTC)));
     }
 
     @Override
     public OrderPaidEvent payOrder(Order order) {
-        return null;
+        order.pay();
+        log.info("order with id : {} is paid.", order.getId().getValue());
+        return new OrderPaidEvent(order, ZonedDateTime.now(ZoneId.of(UTC)));
     }
 
+    //--* 최종 단계 이므로 이벤트가 필요 없다. (이벤트가 전달 될 후속 작업이 없음을 의미한다.)
     @Override
     public void approveOrder(Order order) {
-
+        order.approved();
+        log.info("order with id : {} is approved", order.getId().getValue());
     }
 
     @Override
     public OrderCancelledEvent cancelOrderPayment(Order order, List<String> failureMessages) {
-        return null;
+        order.initCanceled(failureMessages);
+        log.info("order payment is cancelling for order is {}" , order.getId().getValue());
+        return new OrderCancelledEvent(order, ZonedDateTime.now(ZoneId.of(UTC)));
     }
 
+    //취소 처리의 마지막 단계이므로 이벤트를 반환하지 않는다.
     @Override
     public void cancelOrder(Order order, List<String> failureMessages) {
-
+        order.canceled(failureMessages);
+        log.info("order id {} is cancelled", order.getId().getValue());
     }
 
     private void validateRestaurant(Restaurant restaurant) {
