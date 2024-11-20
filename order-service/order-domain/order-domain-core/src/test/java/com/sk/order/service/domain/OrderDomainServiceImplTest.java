@@ -1,10 +1,14 @@
 package com.sk.order.service.domain;
 
 import com.sk.domain.valueobject.OrderId;
+import com.sk.domain.valueobject.RestaurantId;
 import com.sk.order.service.domain.entity.Order;
+import com.sk.order.service.domain.entity.OrderItem;
 import com.sk.order.service.domain.entity.Product;
 import com.sk.order.service.domain.entity.Restaurant;
 import com.sk.order.service.domain.event.OrderCreatedEvent;
+import com.sk.order.service.domain.exception.OrderDomainException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,4 +50,23 @@ class OrderDomainServiceImplTest {
 
     }
 
+    @Test
+    void testValidateAndInitiateOrder_RestaurantNotActive(){
+        when(restaurantMock.getId()).thenReturn(new RestaurantId(UUID.randomUUID()));
+        when(restaurantMock.isActive()).thenReturn(false);
+        OrderDomainException orderDomainException = assertThrows(OrderDomainException.class,
+                () -> orderDomainService.validateAndInitiateOrder(orderMock, restaurantMock));
+        Assertions.assertThat(orderDomainException.getMessage()).contains("is not active");
+    }
+
+    @Test
+    void testCancelOrder() {
+        // Given
+        when(orderMock.getId()).thenReturn(new OrderId(UUID.randomUUID()));
+        List<String> failureMessages = List.of("Order cancellation reason");
+        // When
+        orderDomainService.cancelOrder(orderMock, failureMessages);
+        // Then
+        verify(orderMock).canceled(failureMessages);
+    }
 }
