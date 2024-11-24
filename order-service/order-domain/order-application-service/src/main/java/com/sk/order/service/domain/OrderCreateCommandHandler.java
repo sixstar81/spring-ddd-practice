@@ -47,8 +47,7 @@ public class OrderCreateCommandHandler {
     }
 
     private void checkCustomer(UUID customerId) {
-        Optional<Customer> customer = customerRepository.findCustomer(customerId);
-        if(customer.isEmpty())
-            throw new OrderDomainException("could not find customer with customer id :" + customerId);
+        customerRepository.findCustomer(customerId)
+                .orElseThrow(()->new OrderDomainException("could not find customer with customer id :" + customerId));
     }
 }
