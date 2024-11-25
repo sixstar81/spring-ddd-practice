@@ -3,6 +3,7 @@ package com.sk.order.service.domain;
 import com.sk.order.service.domain.dto.create.CreateOrderCommand;
 import com.sk.order.service.domain.dto.create.CreateOrderResponse;
 import com.sk.order.service.domain.entity.Customer;
+import com.sk.order.service.domain.entity.Order;
 import com.sk.order.service.domain.entity.Restaurant;
 import com.sk.order.service.domain.exception.OrderDomainException;
 import com.sk.order.service.domain.mapper.OrderDataMapper;
@@ -45,6 +46,7 @@ public class OrderCreateCommandHandler {
         //1. 해당 고객이 있는지 여부를 확인한다.
         checkCustomer(createOrderCommand.getCustomerId());
         Restaurant restaurant = checkRestaurant(createOrderCommand);
+        Order order = orderDataMapper.createOrderCommandToOrder(createOrderCommand);
         return null;
     }
 
