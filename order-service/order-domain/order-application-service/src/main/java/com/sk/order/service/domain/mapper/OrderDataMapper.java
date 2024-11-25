@@ -5,6 +5,7 @@ import com.sk.domain.valueobject.Money;
 import com.sk.domain.valueobject.ProductId;
 import com.sk.domain.valueobject.RestaurantId;
 import com.sk.order.service.domain.dto.create.CreateOrderCommand;
+import com.sk.order.service.domain.dto.create.CreateOrderResponse;
 import com.sk.order.service.domain.dto.create.OrderAddress;
 import com.sk.order.service.domain.entity.Order;
 import com.sk.order.service.domain.entity.OrderItem;
@@ -38,6 +39,14 @@ public class OrderDataMapper {
                 .deliveryAddress(orderAddressToStreetAddress(createOrderCommand.getAddress()))
                 .price(new Money(createOrderCommand.getPrice()))
                 .items(orderItemsToOrderItemEntities(createOrderCommand.getItems()))
+                .build();
+    }
+
+    public  CreateOrderResponse orderToCreateOrderResponse(Order order){
+        return CreateOrderResponse.builder()
+                .orderTrackingId(order.getTrackingId().getValue())
+                .orderStatus(order.getOrderStatus())
+
                 .build();
     }
 

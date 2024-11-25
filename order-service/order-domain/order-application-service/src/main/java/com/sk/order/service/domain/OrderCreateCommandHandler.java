@@ -5,6 +5,7 @@ import com.sk.order.service.domain.dto.create.CreateOrderResponse;
 import com.sk.order.service.domain.entity.Customer;
 import com.sk.order.service.domain.entity.Order;
 import com.sk.order.service.domain.entity.Restaurant;
+import com.sk.order.service.domain.event.OrderCreatedEvent;
 import com.sk.order.service.domain.exception.OrderDomainException;
 import com.sk.order.service.domain.mapper.OrderDataMapper;
 import com.sk.order.service.domain.port.output.repository.CustomerRepository;
@@ -47,7 +48,11 @@ public class OrderCreateCommandHandler {
         checkCustomer(createOrderCommand.getCustomerId());
         Restaurant restaurant = checkRestaurant(createOrderCommand);
         Order order = orderDataMapper.createOrderCommandToOrder(createOrderCommand);
-        return null;
+        //--* Order 엔티티를 만들었으니, 이제 Order Domain Service 를 호출
+        OrderCreatedEvent orderCreatedEvent = orderDomainService.validateAndInitiateOrder(order, restaurant);
+        Order saveResult = saveOrder(order);
+        log.info("Order is created with id {}", saveResult.getId().getValue());
+        return orderDataMapper.orderToCreateOrderResponse(saveResult);
     }
 
     private Restaurant checkRestaurant(CreateOrderCommand createOrderCommand) {
@@ -59,5 +64,14 @@ public class OrderCreateCommandHandler {
     private void checkCustomer(UUID customerId) {
         customerRepository.findCustomer(customerId)
                 .orElseThrow(()->new OrderDomainException("could not find customer with customer id :" + customerId));
+    }
+
+    private Order saveOrder(Order order) {
+        Order save = orderRepository.save(order);
+        if (save == null) {
+            throw new OrderDomainException("Could not save order!");
+        }
+        log.info("Order is saved with id {}", order.getId().getValue());
+        return save;
     }
 }
