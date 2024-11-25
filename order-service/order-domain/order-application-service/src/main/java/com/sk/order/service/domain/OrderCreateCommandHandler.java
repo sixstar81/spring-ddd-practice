@@ -3,6 +3,7 @@ package com.sk.order.service.domain;
 import com.sk.order.service.domain.dto.create.CreateOrderCommand;
 import com.sk.order.service.domain.dto.create.CreateOrderResponse;
 import com.sk.order.service.domain.entity.Customer;
+import com.sk.order.service.domain.entity.Restaurant;
 import com.sk.order.service.domain.exception.OrderDomainException;
 import com.sk.order.service.domain.mapper.OrderDataMapper;
 import com.sk.order.service.domain.port.output.repository.CustomerRepository;
@@ -43,7 +44,14 @@ public class OrderCreateCommandHandler {
     public CreateOrderResponse createOrder(CreateOrderCommand createOrderCommand){
         //1. 해당 고객이 있는지 여부를 확인한다.
         checkCustomer(createOrderCommand.getCustomerId());
+        Restaurant restaurant = checkRestaurant(createOrderCommand);
         return null;
+    }
+
+    private Restaurant checkRestaurant(CreateOrderCommand createOrderCommand) {
+        Restaurant restaurant = orderDataMapper.createOrderCommandToRestaurant(createOrderCommand);
+        return restaurantRepository.findRestaurantInformation(restaurant)
+                .orElseThrow(()-> new OrderDomainException("Could not find restaurant with id " + createOrderCommand.getRestaurantId()));
     }
 
     private void checkCustomer(UUID customerId) {
