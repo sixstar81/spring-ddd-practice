@@ -8,6 +8,7 @@ import com.sk.order.service.domain.entity.Restaurant;
 import com.sk.order.service.domain.event.OrderCreatedEvent;
 import com.sk.order.service.domain.exception.OrderDomainException;
 import com.sk.order.service.domain.mapper.OrderDataMapper;
+import com.sk.order.service.domain.port.output.message.publisher.payment.OrderCreatedPaymentRequestMessagePublisher;
 import com.sk.order.service.domain.port.output.repository.CustomerRepository;
 import com.sk.order.service.domain.port.output.repository.OrderRepository;
 import com.sk.order.service.domain.port.output.repository.RestaurantRepository;
@@ -23,55 +24,23 @@ import java.util.UUID;
 public class OrderCreateCommandHandler {
 
     //--* Application Service 에서 Domain Service 를 호출해야 한다.
-    private final OrderDomainService orderDomainService;
-    private final OrderRepository orderRepository;
-    private final CustomerRepository customerRepository;
-    private final RestaurantRepository restaurantRepository;
 
+    private final OrderCreateHelper orderCreateHelper;
     private final OrderDataMapper orderDataMapper;
+    private final OrderCreatedPaymentRequestMessagePublisher orderCreatedPaymentRequestMessagePublisher;
 
-    public OrderCreateCommandHandler(OrderDomainService orderDomainService,
-                                     OrderRepository orderRepository,
-                                     CustomerRepository customerRepository,
-                                     RestaurantRepository restaurantRepository,
-                                     OrderDataMapper orderDataMapper) {
-        this.orderDomainService = orderDomainService;
-        this.orderRepository = orderRepository;
-        this.customerRepository = customerRepository;
-        this.restaurantRepository = restaurantRepository;
+    public OrderCreateCommandHandler(OrderCreateHelper orderCreateHelper, OrderDataMapper orderDataMapper, OrderCreatedPaymentRequestMessagePublisher orderCreatedPaymentRequestMessagePublisher) {
+        this.orderCreateHelper = orderCreateHelper;
         this.orderDataMapper = orderDataMapper;
+        this.orderCreatedPaymentRequestMessagePublisher = orderCreatedPaymentRequestMessagePublisher;
     }
 
-    @Transactional
     public CreateOrderResponse createOrder(CreateOrderCommand createOrderCommand){
         //1. 해당 고객이 있는지 여부를 확인한다.
-        checkCustomer(createOrderCommand.getCustomerId());
-        Restaurant restaurant = checkRestaurant(createOrderCommand);
-        Order order = orderDataMapper.createOrderCommandToOrder(createOrderCommand);
-        //--* Order 엔티티를 만들었으니, 이제 Order Domain Service 를 호출
-        OrderCreatedEvent orderCreatedEvent = orderDomainService.validateAndInitiateOrder(order, restaurant);
-        Order saveResult = saveOrder(order);
-        log.info("Order is created with id {}", saveResult.getId().getValue());
-        return orderDataMapper.orderToCreateOrderResponse(saveResult);
-    }
-
-    private Restaurant checkRestaurant(CreateOrderCommand createOrderCommand) {
-        Restaurant restaurant = orderDataMapper.createOrderCommandToRestaurant(createOrderCommand);
-        return restaurantRepository.findRestaurantInformation(restaurant)
-                .orElseThrow(()-> new OrderDomainException("Could not find restaurant with id " + createOrderCommand.getRestaurantId()));
-    }
-
-    private void checkCustomer(UUID customerId) {
-        customerRepository.findCustomer(customerId)
-                .orElseThrow(()->new OrderDomainException("could not find customer with customer id :" + customerId));
-    }
-
-    private Order saveOrder(Order order) {
-        Order save = orderRepository.save(order);
-        if (save == null) {
-            throw new OrderDomainException("Could not save order!");
-        }
-        log.info("Order is saved with id {}", order.getId().getValue());
-        return save;
+        OrderCreatedEvent orderCreatedEvent = orderCreateHelper.persistOrder(createOrderCommand);
+        log.info("Order is created with id {}", orderCreatedEvent.getOrder().getId().getValue() );
+        // git checkout -b publish-event-option-1
+        orderCreatedPaymentRequestMessagePublisher.publisher(orderCreatedEvent);
+        return orderDataMapper.orderToCreateOrderResponse(orderCreatedEvent.getOrder());
     }
 }
